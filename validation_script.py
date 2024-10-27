@@ -147,7 +147,7 @@ def make_report(new_file_path, old_file_path, output_folder):
             })
         
         # Sort the results by brand name
-        return pd.DataFrame(results).sort_values('Brand', key=lambda x: x.str.extract('(\d+)', expand=False).astype(int))
+        return pd.DataFrame(results).sort_values('Brand', key=lambda x: x.str.extract(r'(\d+)', expand=False).astype(int))
 
     # Calculate brand-wise percentages for old and new data
     old_brandwise = calculate_components_by_brand(df_old).set_index('Brand')

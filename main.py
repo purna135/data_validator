@@ -6,6 +6,7 @@ from jinja2 import Template
 import matplotlib.pyplot as plt
 from werkzeug.utils import secure_filename
 from validation_script import make_report
+# from script2 import make_validation_report
 import secrets
 secret_key = secrets.token_hex(16)
 
@@ -107,4 +108,5 @@ def serve_output(filename):
     return send_from_directory(app.config['OUTPUT_FOLDER'], filename)
 
 if __name__ == "__main__":
-    app.run()
+    port = int(os.environ.get("PORT", 8080))
+    app.run(host='0.0.0.0', port=port)
