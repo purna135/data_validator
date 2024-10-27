@@ -107,7 +107,7 @@ def make_report(new_file_path, old_file_path, output_folder):
 
                 plt.title(f'{brand} - Comparison of {col}')
                 plt.xlabel('Date')
-                # plt.ylabel(col)
+                plt.ylabel(col)
                 plt.legend()
                 plt.grid(True)
                 plt.tight_layout()

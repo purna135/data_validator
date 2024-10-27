@@ -107,12 +107,14 @@
         }
 
         function updateEstimatedTime() {
-            let days = 1892;
+            let days = Math.floor(1000 + Math.random() * 9000);
+            const emojis = ['😅', '🤔', '😂', '🙃', '🤨', '😬', '🥴', '🫠', '🤯', '🥳'];
             const estimatedTimeElement = document.getElementById('estimated-time');
             const interval = setInterval(() => {
                 days -= 1;
                 if (days > 0) {
-                    estimatedTimeElement.textContent = `Estimated time: ${days} years 🫤`;
+                    const randomEmoji = emojis[Math.floor(Math.random() * emojis.length)];
+                    estimatedTimeElement.textContent = `Estimated time: ${days} years ${randomEmoji}`;
                 } else {
                     clearInterval(interval);
                     estimatedTimeElement.textContent = 'Processing complete!';
