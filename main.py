@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, send_file, session, send_from_directory
+from flask import Flask, render_template, request, redirect, url_for, send_file, session, send_from_directory, stream_with_context, Response
 import os
 import pandas as pd
 import pdfkit
@@ -88,19 +88,39 @@ def view_html():
 
 @app.route("/download_pdf")
 def download_pdf():
-    pdf_report_path = os.path.join(app.config['OUTPUT_FOLDER'], "validation_report.pdf")
-    
-    # Get the name of the uploaded file (you'll need to store this when uploading)
-    uploaded_filename = session.get('uploaded_filename', 'unknown')
-    
-    # Get the base name of the original file (without extension)
-    original_name = os.path.splitext(uploaded_filename)[0]
-    
-    # Create a new filename with the original name as a suffix
-    new_filename = f"validation_report_{original_name}.pdf"
-    
-    return send_file(pdf_report_path, as_attachment=True, download_name=new_filename)
+    try:
+        pdf_report_path = os.path.join(app.config['OUTPUT_FOLDER'], "validation_report.pdf")
+        
+        if not os.path.exists(pdf_report_path):
+            return "PDF report not found", 404
 
+        # Get the name of the uploaded file (you'll need to store this when uploading)
+        uploaded_filename = session.get('uploaded_filename', 'unknown')
+        
+        # Get the base name of the original file (without extension)
+        original_name = os.path.splitext(uploaded_filename)[0]
+        
+        # Create a new filename with the original name as a suffix
+        new_filename = f"validation_report_{original_name}.pdf"
+
+        def generate():
+            with open(pdf_report_path, 'rb') as f:
+                while True:
+                    chunk = f.read(8192)  # Read in 8KB chunks
+                    if not chunk:
+                        break
+                    yield chunk
+
+        response = Response(
+            stream_with_context(generate()),
+            content_type='application/pdf'
+        )
+        response.headers['Content-Disposition'] = f'attachment; filename="{new_filename}"'
+        return response
+
+    except Exception as e:
+        app.logger.error(f"Error in download_pdf: {str(e)}")
+        return "Error streaming PDF", 500
 
 
 @app.route('/outputs/<path:filename>')
