@@ -6,7 +6,7 @@
     <title>File Upload Comparison</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-gray-100 min-h-screen flex justify-center pt-20">
+<body class="bg-gray-100 min-h-screen flex justify-center pt-10">
     <div class="container mx-auto px-20">
         <h1 class="text-3xl font-bold text-center mb-8 text-gray-800">Bain Data Validation</h1>
         <form id="upload-form" action="/" method="post" enctype="multipart/form-data" class="space-y-8">
@@ -57,21 +57,26 @@
                 </div>
             </div>
             <div id="error-message" class="text-red-500 text-center hidden">Please upload both files before submitting.</div>
-            <div class="mt-8 text-center">
-                <button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg transition duration-300">
+            <div class="mt-8 flex justify-center">
+                <button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg transition duration-300 flex items-center">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path></svg>
                     Compare Files
                 </button>
             </div>
         </form>
         <div id="loading" class="fixed top-0 left-0 w-full h-full bg-gray-800 bg-opacity-50 flex flex-col justify-center items-center hidden">
             <img src="https://c.tenor.com/RJVGObyOpd0AAAAC/tenor.gif" alt="Loading..." class="w-80 h-80 mb-4 rounded-lg">
-            <p id="loading-message" class="text-red-500 text-xl font-bold bg-white p-2 rounded">Processing files...</p>
+            <p id="estimated-time" class="text-red-500 text-xl font-bold bg-white p-2 rounded mb-2">Estimated time: 1892 years 🫤</p>
+            <p id="running-time" class="text-black-500 text-xl font-bold bg-white p-2 rounded">Running time: 00:00:00</p>
         </div>
         <div id="report-buttons" class="mt-8 text-center hidden">
-            <a href="/download_pdf" class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded-lg transition duration-300 mr-4">
+            <p class="text-lg font-semibold mb-4">Your report is ready! Choose an option below:</p>
+            <a href="/download_pdf" class="bg-purple-500 hover:bg-purple-600 text-white font-bold py-2 px-4 rounded-lg transition duration-300 mr-4 inline-flex items-center">
+                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
                 Download PDF Report
             </a>
-            <a href="{{ url_for('static', filename='report.html') }}" target="_blank" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg transition duration-300">
+            <a href="/view_html" target="_blank" class="bg-teal-500 hover:bg-teal-600 text-white font-bold py-2 px-4 rounded-lg transition duration-300 inline-flex items-center">
+                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
                 View HTML Report
             </a>
         </div>
@@ -101,6 +106,38 @@
             return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
         }
 
+        function updateEstimatedTime() {
+            let days = 1892;
+            const estimatedTimeElement = document.getElementById('estimated-time');
+            const interval = setInterval(() => {
+                days -= 1;
+                if (days > 0) {
+                    estimatedTimeElement.textContent = `Estimated time: ${days} years 🫤`;
+                } else {
+                    clearInterval(interval);
+                    estimatedTimeElement.textContent = 'Processing complete!';
+                }
+            }, 1500);
+        }
+
+        function updateRunningTime() {
+            let seconds = 0;
+            const runningTimeElement = document.getElementById('running-time');
+            const interval = setInterval(() => {
+                seconds += 1;
+                const hours = Math.floor(seconds / 3600);
+                const minutes = Math.floor((seconds % 3600) / 60);
+                const remainingSeconds = seconds % 60;
+                const formattedTime = [
+                    hours.toString().padStart(2, '0'),
+                    minutes.toString().padStart(2, '0'),
+                    remainingSeconds.toString().padStart(2, '0')
+                ].join(':');
+                runningTimeElement.textContent = `Running time: ${formattedTime}`;
+            }, 1000);
+            return interval;
+        }
+
         $(document).ready(function() {
             $('#upload-form').submit(function(e) {
                 e.preventDefault();
@@ -114,6 +151,8 @@
                 
                 $('#error-message').addClass('hidden');
                 $('#loading').removeClass('hidden');
+                updateEstimatedTime();
+                const runningTimeInterval = updateRunningTime();
                 
                 const formData = new FormData(this);
                 
@@ -126,10 +165,12 @@
                     success: function(response) {
                         $('#loading').addClass('hidden');
                         $('#report-buttons').removeClass('hidden');
+                        clearInterval(runningTimeInterval);
                     },
                     error: function() {
                         $('#loading').addClass('hidden');
                         $('#error-message').text('An error occurred. Please try again.').removeClass('hidden');
+                        clearInterval(runningTimeInterval);
                     }
                 });
             });
