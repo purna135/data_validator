@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>File Upload Comparison</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 min-h-screen flex justify-center pt-20">
+    <div class="container mx-auto px-20">
+        <h1 class="text-3xl font-bold text-center mb-8 text-gray-800">Bain Data Validation</h1>
+        <form id="upload-form" action="/" method="post" enctype="multipart/form-data" class="space-y-8">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <h2 class="text-xl font-semibold mb-4 text-gray-700">Upload Old File</h2>
+                    <div class="flex items-center justify-center w-full">
+                        <label for="old-file" class="flex flex-col items-center justify-center w-full h-32 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100">
+                            <div class="flex flex-col items-center justify-center pt-5 pb-6">
+                                <svg class="w-10 h-10 mb-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path></svg>
+                                <p class="mb-2 text-sm text-gray-500"><span class="font-semibold">Click to upload</span> or drag and drop</p>
+                                <p class="text-xs text-gray-500">CSV, XLS, or XLSX (MAX. 10MB)</p>
+                            </div>
+                            <input id="old-file" name="old-file" type="file" class="hidden" accept=".csv,.xls,.xlsx" onchange="updateFilePreview(this, 'old-file-preview')" />
+                        </label>
+                    </div>
+                    <div id="old-file-preview" class="mt-4 hidden">
+                        <div class="bg-gray-100 p-4 rounded-lg flex items-center">
+                            <svg class="w-8 h-8 text-gray-400 mr-3" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 6a1 1 0 011-1h6a1 1 0 110 2H7a1 1 0 01-1-1zm1 3a1 1 0 100 2h6a1 1 0 100-2H7z" clip-rule="evenodd"></path></svg>
+                            <div>
+                                <p id="old-file-name" class="font-semibold text-sm text-gray-700"></p>
+                                <p id="old-file-size" class="text-xs text-gray-500"></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-white rounded-lg shadow-md p-6">
+                    <h2 class="text-xl font-semibold mb-4 text-gray-700">Upload New File</h2>
+                    <div class="flex items-center justify-center w-full">
+                        <label for="new-file" class="flex flex-col items-center justify-center w-full h-32 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100">
+                            <div class="flex flex-col items-center justify-center pt-5 pb-6">
+                                <svg class="w-10 h-10 mb-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path></svg>
+                                <p class="mb-2 text-sm text-gray-500"><span class="font-semibold">Click to upload</span> or drag and drop</p>
+                                <p class="text-xs text-gray-500">CSV, XLS, or XLSX (MAX. 10MB)</p>
+                            </div>
+                            <input id="new-file" name="new-file" type="file" class="hidden" accept=".csv,.xls,.xlsx" onchange="updateFilePreview(this, 'new-file-preview')" />
+                        </label>
+                    </div>
+                    <div id="new-file-preview" class="mt-4 hidden">
+                        <div class="bg-gray-100 p-4 rounded-lg flex items-center">
+                            <svg class="w-8 h-8 text-gray-400 mr-3" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 6a1 1 0 011-1h6a1 1 0 110 2H7a1 1 0 01-1-1zm1 3a1 1 0 100 2h6a1 1 0 100-2H7z" clip-rule="evenodd"></path></svg>
+                            <div>
+                                <p id="new-file-name" class="font-semibold text-sm text-gray-700"></p>
+                                <p id="new-file-size" class="text-xs text-gray-500"></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="error-message" class="text-red-500 text-center hidden">Please upload both files before submitting.</div>
+            <div class="mt-8 text-center">
+                <button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg transition duration-300">
+                    Compare Files
+                </button>
+            </div>
+        </form>
+        <div id="loading" class="fixed top-0 left-0 w-full h-full bg-gray-800 bg-opacity-50 flex flex-col justify-center items-center hidden">
+            <img src="https://c.tenor.com/RJVGObyOpd0AAAAC/tenor.gif" alt="Loading..." class="w-80 h-80 mb-4 rounded-lg">
+            <p id="loading-message" class="text-red-500 text-xl font-bold bg-white p-2 rounded">Processing files...</p>
+        </div>
+        <div id="report-buttons" class="mt-8 text-center hidden">
+            <a href="/download_pdf" class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded-lg transition duration-300 mr-4">
+                Download PDF Report
+            </a>
+            <a href="{{ url_for('static', filename='report.html') }}" target="_blank" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg transition duration-300">
+                View HTML Report
+            </a>
+        </div>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        function updateFilePreview(input, previewId) {
+            const file = input.files[0];
+            const preview = document.getElementById(previewId);
+            const fileName = preview.querySelector('p:first-child');
+            const fileSize = preview.querySelector('p:last-child');
+
+            if (file) {
+                fileName.textContent = file.name;
+                fileSize.textContent = formatFileSize(file.size);
+                preview.classList.remove('hidden');
+            } else {
+                preview.classList.add('hidden');
+            }
+        }
+
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
+
+        $(document).ready(function() {
+            $('#upload-form').submit(function(e) {
+                e.preventDefault();
+                const oldFile = $('#old-file')[0].files[0];
+                const newFile = $('#new-file')[0].files[0];
+                
+                if (!oldFile || !newFile) {
+                    $('#error-message').removeClass('hidden');
+                    return;
+                }
+                
+                $('#error-message').addClass('hidden');
+                $('#loading').removeClass('hidden');
+                
+                const formData = new FormData(this);
+                
+                $.ajax({
+                    url: '/',
+                    type: 'POST',
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: function(response) {
+                        $('#loading').addClass('hidden');
+                        $('#report-buttons').removeClass('hidden');
+                    },
+                    error: function() {
+                        $('#loading').addClass('hidden');
+                        $('#error-message').text('An error occurred. Please try again.').removeClass('hidden');
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
