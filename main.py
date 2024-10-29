@@ -54,7 +54,7 @@ def index():
                                    html_report=html_report,
                                    pdf_report=pdf_report)
 
-    return render_template("indexv2.html")
+    return render_template("index.html")
 
 @app.route("/view_html")
 def view_html():
