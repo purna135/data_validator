@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>File Upload Comparison</title>
+    <title>Data Validation</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-gray-100 min-h-screen flex justify-center pt-10">
@@ -11,7 +11,7 @@
         <h1 class="text-3xl font-bold text-center mb-8 text-gray-800">Data Validation</h1>
         <form id="upload-form" action="/" method="post" enctype="multipart/form-data" class="space-y-8">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                <div class="bg-white rounded-lg shadow-md p-6">
+                <div class="bg-white rounded-lg shadow-md p-8">
                     <h2 class="text-xl font-semibold mb-4 text-gray-700">Upload Old File</h2>
                     <div class="flex items-center justify-center w-full">
                         <label for="old-file" class="flex flex-col items-center justify-center w-full h-32 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100">
@@ -33,7 +33,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="bg-white rounded-lg shadow-md p-6">
+                <div class="bg-white rounded-lg shadow-md p-8">
                     <h2 class="text-xl font-semibold mb-4 text-gray-700">Upload New File</h2>
                     <div class="flex items-center justify-center w-full">
                         <label for="new-file" class="flex flex-col items-center justify-center w-full h-32 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100">
@@ -56,8 +56,31 @@
                     </div>
                 </div>
             </div>
+            
+            <!-- <div class="bg-white rounded-lg shadow-md p-6 mt-0">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div>
+                        <label for="country" class="block text-sm font-medium text-gray-700 mb-2">Country(optional)</label>
+                        <select id="country" name="country" class="w-full p-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500">
+                            <option value="">Select a country</option>
+                            <option value="USA">USA</option>
+                            <option value="Great Britain">Great Britain</option>
+                            <option value="Brazil">Brazil</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="start-date" class="block text-sm font-medium text-gray-700 mb-2">Start Date(optional)</label>
+                        <input type="date" id="start-date" name="start-date" class="w-full p-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500">
+                    </div>
+                    <div>
+                        <label for="end-date" class="block text-sm font-medium text-gray-700 mb-2">End Date(optional)</label>
+                        <input type="date" id="end-date" name="end-date" class="w-full p-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500">
+                    </div>
+                </div>
+            </div> -->
             <div id="error-message" class="text-red-500 text-center hidden">Please upload both files before submitting.</div>
-            <div class="mt-8 flex justify-center">
+            
+            <div class="m-8 flex justify-center">
                 <button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg transition duration-300 flex items-center">
                     <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path></svg>
                     Compare Files
@@ -107,18 +130,12 @@
         }
 
         function updateEstimatedTime() {
-            let days = Math.floor(1000 + Math.random() * 9000);
             const emojis = ['😅', '🤔', '😂', '🙃', '🤨', '😬', '🥴', '🫠', '🤯', '🥳'];
             const estimatedTimeElement = document.getElementById('estimated-time');
-            const interval = setInterval(() => {
-                days -= 1;
-                if (days > 0) {
-                    const randomEmoji = emojis[Math.floor(Math.random() * emojis.length)];
-                    estimatedTimeElement.textContent = `Estimated time: ${days} years ${randomEmoji}`;
-                } else {
-                    clearInterval(interval);
-                    estimatedTimeElement.textContent = 'Processing complete!';
-                }
+            setInterval(() => {
+                const randomDays = Math.floor(1000 + Math.random() * 9000);
+                const randomEmoji = emojis[Math.floor(Math.random() * emojis.length)];
+                estimatedTimeElement.textContent = `Estimated time: ${randomDays} years ${randomEmoji}`;
             }, 1500);
         }
 
@@ -145,9 +162,12 @@
                 e.preventDefault();
                 const oldFile = $('#old-file')[0].files[0];
                 const newFile = $('#new-file')[0].files[0];
+                const country = $('#country').val();
+                const startDate = $('#start-date').val();
+                const endDate = $('#end-date').val();
                 
                 if (!oldFile || !newFile) {
-                    $('#error-message').removeClass('hidden');
+                    $('#error-message').text('Please fill in all fields and upload both files before submitting.').removeClass('hidden');
                     return;
                 }
                 

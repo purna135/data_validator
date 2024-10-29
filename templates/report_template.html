@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Data Validation Report</title>
+    <style>
+        /* General styling */
+        body { font-family: Arial, sans-serif; margin: 60px; color: #333; line-height: 1.6; }
+        h1, h2, h3 { color: #4A90E2; }
+        h1 { text-align: center; }
+        
+        /* Table styling */
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; table-layout: auto; }
+        th, td { padding: 12px; text-align: left; word-wrap: break-word; white-space: normal; }
+        th { background-color: #f4f6f8; color: #333; }
+        tr:nth-child(even) { background-color: #f9f9f9; }
+
+        /* Section styling */
+        .section { margin-bottom: 40px; }
+        .section h2 { border-bottom: 2px solid #ddd; padding-bottom: 8px; }
+        ul { list-style-type: disc; padding-left: 20px; }
+        ul.missing-columns { list-style-type: circle; }
+        
+        /* Chart table styling */
+        .chart-table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        .chart-table td { width: 33.33%; padding: 10px; vertical-align: top; }
+        img { width: 100%; height: auto; border: 1px solid #ddd; box-shadow: 2px 2px 5px rgba(0,0,0,0.1); cursor: pointer; }
+        
+        /* DataTables custom styling */
+        .dataTables_wrapper .dataTables_filter input { border-radius: 4px; padding: 4px; }
+        .dataTables_wrapper .dataTables_paginate .paginate_button { padding: 5px; margin: 2px; }
+
+        .collapsible {
+            background-color: #f1f1f1;
+            color: #444;
+            cursor: pointer;
+            padding: 18px;
+            width: 100%;
+            border: none;
+            text-align: left;
+            outline: none;
+            font-size: 15px;
+        }
+
+        .active, .collapsible:hover {
+            background-color: #ccc;
+        }
+
+        .content {
+            padding: 0 18px;
+            display: none;
+            overflow: hidden;
+            background-color: #f9f9f9;
+        }
+    </style>
+
+    <!-- Include DataTables only if not generating a PDF -->
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.11.3/css/jquery.dataTables.min.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.datatables.net/1.11.3/js/jquery.dataTables.min.js"></script>
+
+    <!-- Lightbox CSS and JS for image popup (optional) -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.3/css/lightbox.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.3/js/lightbox.min.js"></script>
+    
+    <!-- Font Awesome CSS for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+</head>
+<body>
+    <h1>Data Validation Report</h1>
+
+    <div class="section">
+        <p>New Filename: {{ new_file_name }}</p>
+        <p>Old Filename: {{ old_file_name }}</p>
+        <p>Showing Data till: {{ end_date }}</p>
+    </div>
+
+    {% if missing_in_new or missing_in_old %}
+        <div class="section">
+            <h2>Missing Columns</h2>
+            {% if missing_in_new%}
+                <h3>Columns Missing in New File</h3>
+                <ul class="missing-columns">
+                    {% for col in missing_in_new %}
+                        <li>{{ col }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+            {% if missing_in_old %}
+                <h3>Columns Missing in Old File</h3>
+                <ul class="missing-columns">
+                    {% for col in missing_in_old %}
+                        <li>{{ col }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        </div>
+    {% endif %}
+
+    <div class="section">
+        <h2>Comparison of Media, Controls, and Intercept Contributions</h2>
+        {{ media_comparison | safe }}
+    </div>
+
+    <div class="section">
+        <h2>Year-wise Comparison of Media, Controls, and Intercept Contributions</h2>
+        {{ yearly_comparison | safe }}
+    </div>
+
+    <div class="section">
+        <h2>Brand-wise and Year-wise Comparison (Excluding 2021 and 2022)</h2>
+        {{ yearly_brand_comparison | safe }}
+    </div>
+
+    {% if not for_pdf %}
+    <div class="section">
+        <h2>Variable Categories</h2>
+        
+        <button type="button" class="collapsible">
+            <i class="fas fa-chevron-down"></i> Media Variables
+        </button>
+        <div class="content">
+            <ul>
+                {% for col in media_cols %}
+                    <li>{{ col }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+
+        <button type="button" class="collapsible">
+            <i class="fas fa-chevron-down"></i> Control Variables
+        </button>
+        <div class="content">
+            <ul>
+                {% for col in control_cols %}
+                    <li>{{ col }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+
+        <button type="button" class="collapsible">
+            <i class="fas fa-chevron-down"></i> Intercept Variables
+        </button>
+        <div class="content">
+            <ul>
+                {% for col in intercept_cols %}
+                    <li>{{ col }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+
+        <button type="button" class="collapsible">
+            <i class="fas fa-chevron-down"></i> Uncategorized Variables
+        </button>
+        <div class="content">
+            <ul>
+                {% for col in other_cols %}
+                    <li>{{ col }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+    {% endif %}
+    
+    <div class="section">
+        <h2>Summary of Significant Changes</h2>
+        {{ summary_table | safe }}
+    </div>
+    
+    <div class="section">
+        <h2>Brand-wise Charts for Variables with >5% Difference</h2>
+        {% if not for_pdf %}
+            <p><b>NOTE: </b>Click on image to increase its size</p>
+        {% endif %}
+        <table class="chart-table">
+            <tr>
+            {% for chart in brand_wise_charts %}
+                <td>
+                    {% if not for_pdf %}
+                        <a href="{{ chart }}" data-lightbox="charts">
+                            <img src="{{ chart }}" alt="Chart">
+                        </a>
+                    {% else %}
+                        <img src="{{ chart }}" alt="Chart">
+                    {% endif %}
+                </td>
+                {% if loop.index % 3 == 0 %}</tr><tr>{% endif %}
+            {% endfor %}
+            </tr>
+        </table>
+    </div>
+            
+    <!-- Initialize DataTables only if not generating PDF -->
+    {% if not for_pdf %}
+    <script>
+        $(document).ready(function() {
+            $('#media-comparison').DataTable();
+            $('#yearly-comparison').DataTable();
+            $('#yearly-brand-comparison').DataTable();
+            $('#summary-table').DataTable();
+        });
+
+        var coll = document.getElementsByClassName("collapsible");
+        var i;
+
+        for (i = 0; i < coll.length; i++) {
+            coll[i].addEventListener("click", function() {
+                this.classList.toggle("active");
+                var content = this.nextElementSibling;
+                if (content.style.display === "block") {
+                    content.style.display = "none";
+                } else {
+                    content.style.display = "block";
+                }
+            });
+        }
+    </script>
+    {% endif %}
+</body>
+</html>

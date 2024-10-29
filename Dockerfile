@@ -34,6 +34,7 @@ ENV WKHTMLTOPDF_CMD=/usr/local/bin/wkhtmltopdf.sh
 ENV MALLOC_ARENA_MAX=2
 ENV PORT=8080
 ENV PYTHONUNBUFFERED=1
+ENV ENVIRONMENT=production
 
 # Create a non-root user
 RUN useradd -m myuser

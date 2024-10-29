@@ -1,12 +1,7 @@
 from flask import Flask, render_template, request, redirect, url_for, send_file, session, send_from_directory, stream_with_context, Response
 import os
-import pandas as pd
-import pdfkit
-from jinja2 import Template
-import matplotlib.pyplot as plt
 from werkzeug.utils import secure_filename
-from validation_script import make_report
-# from script2 import make_validation_report
+from validation_script import make_validation_report
 import secrets
 secret_key = secrets.token_hex(16)
 
@@ -19,28 +14,14 @@ app.secret_key = secret_key
 os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
 os.makedirs(app.config['OUTPUT_FOLDER'], exist_ok=True)
 
-# Helper functions here (e.g., processing data, generating reports)
-def process_files(file1_path, file2_path):
-    # Placeholder processing function (replace with your actual code logic)
-    # Create mock data for HTML and PDF reports as examples
-    html_report_path = os.path.join(app.config['OUTPUT_FOLDER'], "validation_report.html")
-    pdf_report_path = os.path.join(app.config['OUTPUT_FOLDER'], "validation_report.pdf")
-
-    # Generate a simple HTML report as a demo
-    html_content = "<h1>Report</h1><p>Report generated based on uploaded files.</p>"
-    with open(html_report_path, "w") as f:
-        f.write(html_content)
-
-    # Convert HTML report to PDF
-    pdfkit.from_file(html_report_path, pdf_report_path)
-
-    return html_report_path, pdf_report_path
-
 @app.route("/", methods=["GET", "POST"])
 def index():
     if request.method == "POST":
         old_file = request.files["old-file"]
         new_file = request.files["new-file"]
+        country = request.form.get("country") or None
+        start_date = request.form.get("start-date") or None
+        end_date = request.form.get("end-date") or None
         if old_file and new_file:
             session['uploaded_filename'] = new_file.filename
             # Save the uploaded files
@@ -51,15 +32,15 @@ def index():
             old_file.save(old_file_path)
             new_file.save(new_file_path)
 
-            # Process the files
-            # Simulate processing time
-            # import time
-            # time.sleep(5)
-            # html_report, pdf_report = process_files(new_file_path, old_file_path)
             output_folder = app.config['OUTPUT_FOLDER']
-            html_report, pdf_report = make_report(new_file_path=new_file_path,
+
+            html_report, pdf_report = make_validation_report(new_file_path=new_file_path,
                                                   old_file_path=old_file_path,
-                                                  output_folder=output_folder)
+                                                  output_folder=output_folder,
+                                                  country = country,
+                                                  start_date = start_date,
+                                                  end_date = end_date
+                                                  )
             
             # Delete the uploaded files from the server
             try:
@@ -73,7 +54,7 @@ def index():
                                    html_report=html_report,
                                    pdf_report=pdf_report)
 
-    return render_template("index.html")
+    return render_template("indexv2.html")
 
 @app.route("/view_html")
 def view_html():
@@ -129,4 +110,11 @@ def serve_output(filename):
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 8080))
-    app.run(host='0.0.0.0', port=port)
+    is_production = os.environ.get('ENVIRONMENT') == 'production'
+    
+    if is_production:
+        # Production in Google App Engine
+        app.run(host='0.0.0.0', port=port)
+    else:
+        # Local development
+        app.run(debug=True)
