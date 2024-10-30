@@ -72,6 +72,11 @@
             overflow: hidden;
             background-color: #f9f9f9;
         }
+
+        .waterfall-plot {
+            max-width: 100%;
+            margin: 20px 0;
+        }
     </style>
 
     <!-- Include DataTables only if not generating a PDF -->
@@ -135,7 +140,7 @@
         {{ yearly_brand_comparison | safe }}
     </div>
 
-    {% if not for_pdf and control_cols %}
+    {% if control_cols %}
     <div class="section">
         <h2>Variable Categories</h2>
         
@@ -145,6 +150,17 @@
         <div class="content">
             <ul>
                 {% for col in media_cols %}
+                    <li>{{ col }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+
+        <button type="button" class="collapsible">
+            <i class="fas fa-chevron-down"></i> Promo Variables
+        </button>
+        <div class="content">
+            <ul>
+                {% for col in promo_cols %}
                     <li>{{ col }}</li>
                 {% endfor %}
             </ul>
@@ -173,7 +189,7 @@
         </div>
 
         <button type="button" class="collapsible">
-            <i class="fas fa-chevron-down"></i> Uncategorized Variables
+            <i class="fas fa-chevron-down"></i> Other Variables
         </button>
         <div class="content">
             <ul>
@@ -184,6 +200,7 @@
         </div>
     </div>
     {% endif %}
+
     {% if paid_media_cols %}
         <div class="section">
             <h2>Media Spend Categories</h2>
@@ -239,6 +256,20 @@
         {{ summary_table | safe }}
     </div>
     
+
+    {% if waterfall_plots %}
+        <!-- Waterfall Plots Section -->
+        <div class="section">
+            <h2>Waterfall Plots - Contribution Comparison</h2>
+            <div class="plots-container">
+                {% for plot in waterfall_plots %}
+                    <img src="{{ plot }}" class="waterfall-plot">
+                {% endfor %}
+            </div>
+        </div>
+    {% endif %}
+
+
     <div class="section">
         <h2>Brand-wise Charts for Variables with >5% Difference</h2>
         {% if not for_pdf %}
@@ -255,7 +286,7 @@
                     {% else %}
                         <img src="{{ chart }}" alt="Chart">
                     {% endif %}
-                    <div class="chart-name">{{ (chart | string).split('/')[-1].split('_', 1)[-1] | safe }}</div>
+                    <div class="chart-name">{{ (chart | string).split('/')[-1].split('_', 1)[-1].rsplit('.', 1)[0] | safe }}</div>
                 </td>
                 {% if loop.index % 3 == 0 %}</tr><tr>{% endif %}
             {% endfor %}
