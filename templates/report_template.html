@@ -72,7 +72,10 @@
     <div class="section">
         <p>New Filename: {{ new_file_name }}</p>
         <p>Old Filename: {{ old_file_name }}</p>
-        <p>Showing Data till: {{ end_date }}</p>
+        {% if country_name %}
+        <p>Country Name: {{ country_name }}</p>
+        {% endif %}
+        <p>Showing Data from {{ start_date }} to {{ end_date }}</p>
     </div>
 
     {% if missing_in_new or missing_in_old %}
@@ -112,7 +115,7 @@
         {{ yearly_brand_comparison | safe }}
     </div>
 
-    {% if not for_pdf %}
+    {% if not for_pdf and control_cols %}
     <div class="section">
         <h2>Variable Categories</h2>
         
@@ -161,7 +164,56 @@
         </div>
     </div>
     {% endif %}
-    
+    {% if paid_media_cols %}
+        <div class="section">
+            <h2>Media Spend Categories</h2>
+            
+            <button type="button" class="collapsible">
+                <i class="fas fa-chevron-down"></i> Paid Media Spend Variables
+            </button>
+            <div class="content">
+                <ul>
+                    {% for col in paid_media_cols %}
+                        <li>{{ col }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+
+            <button type="button" class="collapsible">
+                <i class="fas fa-chevron-down"></i> Promotional Spend Variables
+            </button>
+            <div class="content">
+                <ul>
+                    {% for col in promo_cols %}
+                        <li>{{ col }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+
+            <button type="button" class="collapsible">
+                <i class="fas fa-chevron-down"></i> Retail Spend Variables
+            </button>
+            <div class="content">
+                <ul>
+                    {% for col in retail_cols %}
+                        <li>{{ col }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+
+            <button type="button" class="collapsible">
+                <i class="fas fa-chevron-down"></i> Total Sales Variables
+            </button>
+            <div class="content">
+                <ul>
+                    {% for col in total_sales_cols %}
+                        <li>{{ col }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    {% endif %}
+
     <div class="section">
         <h2>Summary of Significant Changes</h2>
         {{ summary_table | safe }}
@@ -215,6 +267,18 @@
             });
         }
     </script>
+    {% endif %}
+
+    <!-- Open all collapsible sections if generating PDF -->
+    {% if for_pdf %}
+        <script>
+            $(document).ready(function() {
+                $('.collapsible').each(function() {
+                    $(this).addClass('active');
+                    $(this).next('.content').css('display', 'block');
+                });
+            });
+        </script>
     {% endif %}
 </body>
 </html>

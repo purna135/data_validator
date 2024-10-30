@@ -10,98 +10,106 @@
     <div class="container mx-auto px-20">
         <h1 class="text-3xl font-bold text-center mb-8 text-gray-800">Data Validation</h1>
         <form id="upload-form" action="/" method="post" enctype="multipart/form-data" class="space-y-8">
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                <div class="bg-white rounded-lg shadow-md p-8">
-                    <h2 class="text-xl font-semibold mb-4 text-gray-700">Upload Old File</h2>
-                    <div class="flex items-center justify-center w-full">
-                        <label for="old-file" class="flex flex-col items-center justify-center w-full h-32 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100">
-                            <div class="flex flex-col items-center justify-center pt-5 pb-6">
-                                <svg class="w-10 h-10 mb-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path></svg>
-                                <p class="mb-2 text-sm text-gray-500"><span class="font-semibold">Click to upload</span> or drag and drop</p>
-                                <p class="text-xs text-gray-500">CSV, XLS, or XLSX (MAX. 10MB)</p>
+            <div class="grid grid-cols-1 md:grid-cols-5 gap-8">
+                <div class="md:col-span-4">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <div class="bg-white rounded-lg shadow-md p-8">
+                            <h2 class="text-xl font-semibold mb-4 text-gray-700">Upload Old File</h2>
+                            <div class="flex items-center justify-center w-full">
+                                <label for="old-file" class="flex flex-col items-center justify-center w-full h-32 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100">
+                                    <div class="flex flex-col items-center justify-center pt-5 pb-6">
+                                        <svg class="w-10 h-10 mb-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path></svg>
+                                        <p class="mb-2 text-sm text-gray-500"><span class="font-semibold">Click to upload</span> or drag and drop</p>
+                                        <p class="text-xs text-gray-500">CSV, XLS, or XLSX (MAX. 10MB)</p>
+                                    </div>
+                                    <input id="old-file" name="old-file" type="file" class="hidden" accept=".csv,.xls,.xlsx" onchange="updateFilePreview(this, 'old-file-preview')" />
+                                </label>
                             </div>
-                            <input id="old-file" name="old-file" type="file" class="hidden" accept=".csv,.xls,.xlsx" onchange="updateFilePreview(this, 'old-file-preview')" />
-                        </label>
-                    </div>
-                    <div id="old-file-preview" class="mt-4 hidden">
-                        <div class="bg-gray-100 p-4 rounded-lg flex items-center">
-                            <svg class="w-8 h-8 text-gray-400 mr-3" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 6a1 1 0 011-1h6a1 1 0 110 2H7a1 1 0 01-1-1zm1 3a1 1 0 100 2h6a1 1 0 100-2H7z" clip-rule="evenodd"></path></svg>
-                            <div>
-                                <p id="old-file-name" class="font-semibold text-sm text-gray-700"></p>
-                                <p id="old-file-size" class="text-xs text-gray-500"></p>
+                            <div id="old-file-preview" class="mt-4 hidden">
+                                <div class="bg-gray-100 p-4 rounded-lg flex items-center">
+                                    <svg class="w-8 h-8 text-gray-400 mr-3" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 6a1 1 0 011-1h6a1 1 0 110 2H7a1 1 0 01-1-1zm1 3a1 1 0 100 2h6a1 1 0 100-2H7z" clip-rule="evenodd"></path></svg>
+                                    <div>
+                                        <p id="old-file-name" class="font-semibold text-sm text-gray-700"></p>
+                                        <p id="old-file-size" class="text-xs text-gray-500"></p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="bg-white rounded-lg shadow-md p-8">
+                            <h2 class="text-xl font-semibold mb-4 text-gray-700">Upload New File</h2>
+                            <div class="flex items-center justify-center w-full">
+                                <label for="new-file" class="flex flex-col items-center justify-center w-full h-32 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100">
+                                    <div class="flex flex-col items-center justify-center pt-5 pb-6">
+                                        <svg class="w-10 h-10 mb-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path></svg>
+                                        <p class="mb-2 text-sm text-gray-500"><span class="font-semibold">Click to upload</span> or drag and drop</p>
+                                        <p class="text-xs text-gray-500">CSV, XLS, or XLSX (MAX. 10MB)</p>
+                                    </div>
+                                    <input id="new-file" name="new-file" type="file" class="hidden" accept=".csv,.xls,.xlsx" onchange="updateFilePreview(this, 'new-file-preview')" />
+                                </label>
+                            </div>
+                            <div id="new-file-preview" class="mt-4 hidden">
+                                <div class="bg-gray-100 p-4 rounded-lg flex items-center">
+                                    <svg class="w-8 h-8 text-gray-400 mr-3" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 6a1 1 0 011-1h6a1 1 0 110 2H7a1 1 0 01-1-1zm1 3a1 1 0 100 2h6a1 1 0 100-2H7z" clip-rule="evenodd"></path></svg>
+                                    <div>
+                                        <p id="new-file-name" class="font-semibold text-sm text-gray-700"></p>
+                                        <p id="new-file-size" class="text-xs text-gray-500"></p>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-                <div class="bg-white rounded-lg shadow-md p-8">
-                    <h2 class="text-xl font-semibold mb-4 text-gray-700">Upload New File</h2>
-                    <div class="flex items-center justify-center w-full">
-                        <label for="new-file" class="flex flex-col items-center justify-center w-full h-32 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100">
-                            <div class="flex flex-col items-center justify-center pt-5 pb-6">
-                                <svg class="w-10 h-10 mb-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path></svg>
-                                <p class="mb-2 text-sm text-gray-500"><span class="font-semibold">Click to upload</span> or drag and drop</p>
-                                <p class="text-xs text-gray-500">CSV, XLS, or XLSX (MAX. 10MB)</p>
-                            </div>
-                            <input id="new-file" name="new-file" type="file" class="hidden" accept=".csv,.xls,.xlsx" onchange="updateFilePreview(this, 'new-file-preview')" />
-                        </label>
+                    <div class="mt-8 flex justify-center">
+                        <button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg transition duration-300 flex items-center">
+                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path></svg>
+                            Compare Files
+                        </button>
                     </div>
-                    <div id="new-file-preview" class="mt-4 hidden">
-                        <div class="bg-gray-100 p-4 rounded-lg flex items-center">
-                            <svg class="w-8 h-8 text-gray-400 mr-3" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 6a1 1 0 011-1h6a1 1 0 110 2H7a1 1 0 01-1-1zm1 3a1 1 0 100 2h6a1 1 0 100-2H7z" clip-rule="evenodd"></path></svg>
+                    <div id="report-buttons" class="mt-8 text-center hidden">
+                        <p class="text-lg font-semibold mb-4">Your report is ready! Choose an option below:</p>
+                        <div class="flex justify-center space-x-4">
+                            <a href="/download_pdf" class="bg-purple-500 hover:bg-purple-600 text-white font-bold py-2 px-4 rounded-lg transition duration-300 inline-flex items-center">
+                                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                                Download PDF Report
+                            </a>
+                            <a href="/view_html" target="_blank" class="bg-teal-500 hover:bg-teal-600 text-white font-bold py-2 px-4 rounded-lg transition duration-300 inline-flex items-center">
+                                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
+                                View HTML Report
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="md:col-span-1">
+                    <div class="bg-white rounded-lg shadow-md p-4">
+                        <h2 class="text-base font-semibold mb-3 text-gray-700">Configuration</h2>
+                        <div class="space-y-4">
                             <div>
-                                <p id="new-file-name" class="font-semibold text-sm text-gray-700"></p>
-                                <p id="new-file-size" class="text-xs text-gray-500"></p>
+                                <label for="country" class="block text-xs font-medium text-gray-700 mb-1">Country (optional)</label>
+                                <select id="country" name="country_name" class="w-full p-1 text-xs border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500">
+                                    <option value="">Select a country</option>
+                                    <option value="USA" selected>USA</option>
+                                    <option value="Great Britain">Great Britain</option>
+                                    <option value="Brazil">Brazil</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label for="start-date" class="block text-xs font-medium text-gray-700 mb-1">Start Date (optional)</label>
+                                <input type="date" id="start-date" name="start-date" class="w-full p-1 text-xs border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500">
+                            </div>
+                            <div>
+                                <label for="end-date" class="block text-xs font-medium text-gray-700 mb-1">End Date (optional)</label>
+                                <input type="date" id="end-date" name="end-date" value="2024-03-31" class="w-full p-1 text-xs border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500">
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
             
-            <!-- <div class="bg-white rounded-lg shadow-md p-6 mt-0">
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div>
-                        <label for="country" class="block text-sm font-medium text-gray-700 mb-2">Country(optional)</label>
-                        <select id="country" name="country" class="w-full p-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500">
-                            <option value="">Select a country</option>
-                            <option value="USA">USA</option>
-                            <option value="Great Britain">Great Britain</option>
-                            <option value="Brazil">Brazil</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label for="start-date" class="block text-sm font-medium text-gray-700 mb-2">Start Date(optional)</label>
-                        <input type="date" id="start-date" name="start-date" class="w-full p-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500">
-                    </div>
-                    <div>
-                        <label for="end-date" class="block text-sm font-medium text-gray-700 mb-2">End Date(optional)</label>
-                        <input type="date" id="end-date" name="end-date" class="w-full p-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500">
-                    </div>
-                </div>
-            </div> -->
             <div id="error-message" class="text-red-500 text-center hidden">Please upload both files before submitting.</div>
-            
-            <div class="m-8 flex justify-center">
-                <button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg transition duration-300 flex items-center">
-                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path></svg>
-                    Compare Files
-                </button>
-            </div>
         </form>
         <div id="loading" class="fixed top-0 left-0 w-full h-full bg-gray-800 bg-opacity-50 flex flex-col justify-center items-center hidden">
             <img src="https://c.tenor.com/RJVGObyOpd0AAAAC/tenor.gif" alt="Loading..." class="w-80 h-80 mb-4 rounded-lg">
             <p id="estimated-time" class="text-red-500 text-xl font-bold bg-white p-2 rounded mb-2">Estimated time: 1892 years 🫤</p>
             <p id="running-time" class="text-black-500 text-xl font-bold bg-white p-2 rounded">Running time: 00:00:00</p>
-        </div>
-        <div id="report-buttons" class="mt-8 text-center hidden">
-            <p class="text-lg font-semibold mb-4">Your report is ready! Choose an option below:</p>
-            <a href="/download_pdf" class="bg-purple-500 hover:bg-purple-600 text-white font-bold py-2 px-4 rounded-lg transition duration-300 mr-4 inline-flex items-center">
-                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-                Download PDF Report
-            </a>
-            <a href="/view_html" target="_blank" class="bg-teal-500 hover:bg-teal-600 text-white font-bold py-2 px-4 rounded-lg transition duration-300 inline-flex items-center">
-                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
-                View HTML Report
-            </a>
         </div>
     </div>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>

@@ -1,7 +1,7 @@
 from flask import Flask, render_template, request, redirect, url_for, send_file, session, send_from_directory, stream_with_context, Response
 import os
 from werkzeug.utils import secure_filename
-from validation_script import make_validation_report
+from validation_script_media_spend import make_validation_report
 import secrets
 secret_key = secrets.token_hex(16)
 
@@ -19,7 +19,7 @@ def index():
     if request.method == "POST":
         old_file = request.files["old-file"]
         new_file = request.files["new-file"]
-        country = request.form.get("country") or None
+        country_name = request.form.get("country_name") or None
         start_date = request.form.get("start-date") or None
         end_date = request.form.get("end-date") or None
         if old_file and new_file:
@@ -37,7 +37,7 @@ def index():
             html_report, pdf_report = make_validation_report(new_file_path=new_file_path,
                                                   old_file_path=old_file_path,
                                                   output_folder=output_folder,
-                                                  country = country,
+                                                  country_name = country_name,
                                                   start_date = start_date,
                                                   end_date = end_date
                                                   )
