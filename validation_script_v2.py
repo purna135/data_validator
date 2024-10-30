@@ -671,5 +671,6 @@ def make_validation_report(
         raise
     finally:
         # Cleanup
+        logger.info("Cleaning up resources...")
         plt.close('all')
         gc.collect()
