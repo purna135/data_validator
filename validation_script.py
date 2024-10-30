@@ -10,6 +10,7 @@ import gc
 from typing import Tuple, List, Set, Dict, Any
 from dataclasses import dataclass
 import logging
+from scipy.stats import pearsonr
 
 # Configure logging
 logging.basicConfig(
@@ -146,19 +147,44 @@ def plot_comparison_chart(
     avg_pct_diff: float,
     chart_dir: str
 ) -> str:
-    """Creates comparison chart for a specific brand and column"""
+    """Creates comparison chart for a specific brand and column with sales correlation"""
     try:
+        # Calculate total sales for new and old data
+        col_categories = get_media_control_intercept_cols(brand_data)
+        all_contrib_cols = (
+            col_categories.media_cols + 
+            col_categories.control_cols + 
+            col_categories.intercept_cols
+        )
+        
+        # Calculate totals removing '_new' and '_old' suffixes from columns
+        contrib_cols_new = [c for c in brand_data.columns if c.endswith('_new') 
+                          and c[:-4] in all_contrib_cols]
+        contrib_cols_old = [c for c in brand_data.columns if c.endswith('_old') 
+                          and c[:-4] in all_contrib_cols]
+        
+        total_sales_new = brand_data[contrib_cols_new].sum(axis=1)
+        total_sales_old = brand_data[contrib_cols_old].sum(axis=1)
+        
+        # Calculate correlations using scipy's pearsonr
+        corr_new, p_new = pearsonr(brand_data[f'{col}_new'], total_sales_new)
+        corr_old, p_old = pearsonr(brand_data[f'{col}_old'], total_sales_old)
+
+        # Create plot
         plt.figure(figsize=(10, 6))
         plt.plot(brand_data['date'], brand_data[f'{col}_new'],
                 label='New Data', marker='o', linestyle='-', alpha=0.7)
         plt.plot(brand_data['date'], brand_data[f'{col}_old'],
                 label='Old Data', marker='x', linestyle='--', alpha=0.7)
         
+        # Add annotations with p-values
         plt.annotate(
-            f'Avg. % Diff: {avg_pct_diff:.2f}%',
+            f'Avg. % Diff: {avg_pct_diff:.2f}%\n'
+            f'Corr. with Sales (New): {corr_new:.2f} (p={p_new:.3f})\n'
+            f'Corr. with Sales (Old): {corr_old:.2f} (p={p_old:.3f})',
             xy=(0.05, 0.95),
             xycoords='axes fraction',
-            fontsize=12,
+            fontsize=10,
             ha='left',
             va='top',
             color='red',
@@ -172,7 +198,7 @@ def plot_comparison_chart(
         plt.grid(True)
         plt.tight_layout()
         
-        chart_filename = f"{brand}_{col}_comparison.png"
+        chart_filename = f"{brand}_{col}.png"
         chart_path = os.path.join(chart_dir, chart_filename)
         plt.savefig(chart_path)
         plt.close('all')

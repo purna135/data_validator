@@ -1,7 +1,8 @@
 from flask import Flask, render_template, request, redirect, url_for, send_file, session, send_from_directory, stream_with_context, Response
 import os
 from werkzeug.utils import secure_filename
-from validation_script_media_spend import make_validation_report
+# from validation_script_media_spend import make_validation_report
+from validation_script import make_validation_report
 import secrets
 secret_key = secrets.token_hex(16)
 
