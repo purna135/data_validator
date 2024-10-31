@@ -1,4 +1,4 @@
-import datetime
+from datetime import datetime
 from flask import Flask, render_template, request, redirect, url_for, send_file, session, send_from_directory, stream_with_context, Response
 import os
 from werkzeug.utils import secure_filename
@@ -83,7 +83,7 @@ def download_pdf():
         original_name = os.path.splitext(uploaded_filename)[0]
         
         # Get current date and time
-        current_time = datetime.now().strftime("%Y%m%d_%H%M")
+        current_time = datetime.now().strftime("%d-%b-%y_%H%M")
         
         # Create a new filename with the original name and timestamp as a suffix
         new_filename = f"validation_report_{original_name}_{current_time}.pdf"
