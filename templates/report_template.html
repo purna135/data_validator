@@ -5,33 +5,87 @@
     <title>Data Validation Report</title>
     <style>
         /* General styling */
-        body { font-family: Arial, sans-serif; margin: 60px; color: #333; line-height: 1.6; }
-        h1, h2, h3 { color: #4A90E2; }
-        h1 { text-align: center; }
-        
+        body {
+            font-family: Arial, sans-serif;
+            margin: 60px;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        h1, h2, h3 {
+            color: #4A90E2;
+        }
+
+        h1 {
+            text-align: center;
+        }
+
         /* Table styling */
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; table-layout: auto; }
-        th, td { padding: 12px; text-align: left; word-wrap: break-word; white-space: normal; }
-        th { background-color: #f4f6f8; color: #333; }
-        tr:nth-child(even) { background-color: #f9f9f9; }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            table-layout: auto;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+            word-wrap: break-word;
+            white-space: normal;
+        }
+
+        th {
+            background-color: #f4f6f8;
+            color: #333;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
 
         /* Section styling */
-        .section { margin-bottom: 40px; }
-        .section h2 { border-bottom: 2px solid #ddd; padding-bottom: 8px; }
-        ul { list-style-type: disc; padding-left: 20px; }
-        ul.missing-columns { list-style-type: circle; }
-        
+        .section {
+            margin-bottom: 40px;
+        }
+
+        .section h2 {
+            border-bottom: 2px solid #ddd;
+            padding-bottom: 8px;
+        }
+
+        ul {
+            list-style-type: disc;
+            padding-left: 20px;
+        }
+
+        ul.missing-columns {
+            list-style-type: circle;
+        }
+
         /* Chart table styling */
-        .chart-table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-        img { width: 100%; height: auto; border: 1px solid #ddd; box-shadow: 2px 2px 5px rgba(0,0,0,0.1); cursor: pointer; }
-        .chart-table td { 
-            width: 33.33%; 
+        .chart-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        img {
+            width: 100%;
+            height: auto;
+            border: 1px solid #ddd;
+            box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
+            cursor: pointer;
+        }
+
+        .chart-table td {
+            width: 33.33%;
             padding: 15px;
             vertical-align: top;
             max-width: 400px;
         }
-        
-        .chart-name { 
+
+        .chart-name {
             margin-top: 10px;
             text-align: center;
             font-size: 12px;
@@ -46,10 +100,19 @@
             -webkit-box-orient: vertical;
             overflow: hidden;
         }
-        /* DataTables custom styling */
-        .dataTables_wrapper .dataTables_filter input { border-radius: 4px; padding: 4px; }
-        .dataTables_wrapper .dataTables_paginate .paginate_button { padding: 5px; margin: 2px; }
 
+        /* DataTables custom styling */
+        .dataTables_wrapper .dataTables_filter input {
+            border-radius: 4px;
+            padding: 4px;
+        }
+
+        .dataTables_wrapper .dataTables_paginate .paginate_button {
+            padding: 5px;
+            margin: 2px;
+        }
+
+        /* Collapsible section styling */
         .collapsible {
             background-color: #f1f1f1;
             color: #444;
@@ -73,10 +136,12 @@
             background-color: #f9f9f9;
         }
 
+        /* Waterfall plot styling */
         .waterfall-plot {
             max-width: 100%;
             margin: 20px 0;
         }
+
     </style>
 
     <!-- Include DataTables only if not generating a PDF -->
@@ -261,6 +326,7 @@
         <!-- Waterfall Plots Section -->
         <div class="section">
             <h2>Waterfall Plots - Contribution Comparison</h2>
+            <p><b>NOTE: </b>Missing columns are not included in the calculation/plot.</p>
             <table class="chart-table">
                 <tr>
                 {% for plot in waterfall_plots %}
