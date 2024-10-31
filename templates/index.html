@@ -114,8 +114,7 @@
         </form>
         <div id="loading" class="fixed top-0 left-0 w-full h-full bg-gray-800 bg-opacity-50 flex flex-col justify-center items-center hidden">
             <img src="https://c.tenor.com/RJVGObyOpd0AAAAC/tenor.gif" alt="Loading..." class="w-80 h-80 mb-4 rounded-lg">
-            <p id="estimated-time" class="text-red-500 text-xl font-bold bg-white p-2 rounded mb-2">Estimated time: 1892 years 🫤</p>
-            <p id="running-time" class="text-black-500 text-xl font-bold bg-white p-2 rounded">Running time: 00:00:00</p>
+            <p id="running-time" class="text-red-500 text-xl font-bold bg-white p-2 rounded">Running time: 00:00:00</p>
         </div>
     </div>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -141,16 +140,6 @@
             const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
             const i = Math.floor(Math.log(bytes) / Math.log(k));
             return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
-        }
-
-        function updateEstimatedTime() {
-            const emojis = ['😅', '🤔', '😂', '🙃', '🤨', '😬', '🥴', '🫠', '🤯', '🥳'];
-            const estimatedTimeElement = document.getElementById('estimated-time');
-            setInterval(() => {
-                const randomDays = Math.floor(1000 + Math.random() * 9000);
-                const randomEmoji = emojis[Math.floor(Math.random() * emojis.length)];
-                estimatedTimeElement.textContent = `Estimated time: ${randomDays} years ${randomEmoji}`;
-            }, 1500);
         }
 
         function updateRunningTime() {
@@ -187,7 +176,6 @@
                 
                 $('#error-message').addClass('hidden');
                 $('#loading').removeClass('hidden');
-                updateEstimatedTime();
                 const runningTimeInterval = updateRunningTime();
                 
                 const formData = new FormData(this);
