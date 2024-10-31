@@ -69,6 +69,8 @@ def load_and_prepare_data(
 
         if end_date:
             common_dates = common_dates[common_dates <= end_date]
+        if start_date:
+            common_dates = common_dates[common_dates >= start_date]
         
         # Filter dataframes
         df_new = df_new[df_new['date'].isin(common_dates)]
@@ -77,7 +79,7 @@ def load_and_prepare_data(
         df_new['year'] = df_new['date'].dt.year
 
         logger.info("Data loading and preparation completed successfully")
-        
+        logger.info(f"Date range in new data: {df_new['date'].min()} to {df_new['date'].max()}")
         return df_new, df_old
         
     except Exception as e:
@@ -417,14 +419,29 @@ def generate_waterfall_plots(df_old: pd.DataFrame, df_new: pd.DataFrame, output_
         waterfall_dir = os.path.join(output_folder, 'waterfall_plots')
         os.makedirs(waterfall_dir, exist_ok=True)
         
-        # Get paid media columns
-        paid_cols = [col for col in df_new.columns if col.startswith('paid_')]
+        # Get paid media columns that exist in both DataFrames
+        paid_cols_old = set(col for col in df_old.columns if col.startswith('paid_'))
+        paid_cols_new = set(col for col in df_new.columns if col.startswith('paid_'))
+        paid_cols = list(paid_cols_old.intersection(paid_cols_new))
+        
+        if not paid_cols:
+            logger.warning("No common paid media columns found between old and new data")
+            return []
+        
+        # Common style for value labels
+        label_style = {
+            'fontsize': 8,
+            'fontweight': 'bold',
+            'bbox': dict(
+                facecolor='white',
+                edgecolor='none',
+                alpha=0.7,
+                pad=1
+            )
+        }
         
         # Process each hierarchy/brand
         for hierarchy in df_new['hierarchy'].unique():
-            # Create figure with three subplots side by side
-            fig, (ax1, ax2, ax3) = plt.subplots(1, 3, figsize=(30, 8))
-            
             # Process old data
             old_data = df_old[df_old['hierarchy'] == hierarchy][paid_cols].sum() / 1e6
             old_cumsum = old_data.cumsum().shift(fill_value=0)
@@ -439,23 +456,11 @@ def generate_waterfall_plots(df_old: pd.DataFrame, df_new: pd.DataFrame, output_
             # Bar positions
             bar_positions = np.arange(len(paid_cols)) * 2
             
-            # Common style for value labels
-            label_style = {
-                'fontsize': 8,
-                'fontweight': 'bold',
-                'bbox': dict(
-                    facecolor='white',
-                    edgecolor='none',
-                    alpha=0.7,
-                    pad=1
-                )
-            }
-            
             # Plot old data waterfall
-            bars1 = ax1.bar(bar_positions, old_data, bottom=old_cumsum, color="blue", alpha=0.7)
-            ax1.set_title(f'Old Contributions - {hierarchy}', pad=20)
-            ax1.set_xticks(bar_positions)
-            ax1.set_xticklabels(paid_cols, rotation=45, ha='right', fontsize=8)
+            plt.figure(figsize=(10, 8))
+            bars1 = plt.bar(bar_positions, old_data, bottom=old_cumsum, color="blue", alpha=0.7)
+            plt.title(f'Old Contributions - {hierarchy}', pad=20)
+            plt.xticks(bar_positions, paid_cols, rotation=45, ha='right', fontsize=8)
             
             # Add value labels for old data
             for bar in bars1:
@@ -463,7 +468,7 @@ def generate_waterfall_plots(df_old: pd.DataFrame, df_new: pd.DataFrame, output_
                 y_pos = bar.get_y() + height/2
                 # Only show label if height is significant enough
                 if abs(height) > 0.01:  # Adjust threshold as needed
-                    ax1.text(
+                    plt.text(
                         bar.get_x() + bar.get_width()/2.,
                         y_pos,
                         f'{height:.1f}M',
@@ -471,12 +476,17 @@ def generate_waterfall_plots(df_old: pd.DataFrame, df_new: pd.DataFrame, output_
                         va='center',
                         **label_style
                     )
+            plt.tight_layout()
+            old_plot_path = os.path.join(waterfall_dir, f'waterfall_plot_{hierarchy}_old.png')
+            plt.savefig(old_plot_path, bbox_inches='tight', dpi=300)
+            plt.close()
+            plot_paths.append(f"outputs/waterfall_plots/{os.path.basename(old_plot_path)}")
             
             # Plot new data waterfall
-            bars2 = ax2.bar(bar_positions, new_data, bottom=new_cumsum, color="green", alpha=0.7)
-            ax2.set_title(f'New Contributions - {hierarchy}', pad=20)
-            ax2.set_xticks(bar_positions)
-            ax2.set_xticklabels(paid_cols, rotation=45, ha='right', fontsize=8)
+            plt.figure(figsize=(10, 8))
+            bars2 = plt.bar(bar_positions, new_data, bottom=new_cumsum, color="green", alpha=0.7)
+            plt.title(f'New Contributions - {hierarchy}', pad=20)
+            plt.xticks(bar_positions, paid_cols, rotation=45, ha='right', fontsize=8)
             
             # Add value labels for new data
             for bar in bars2:
@@ -484,7 +494,7 @@ def generate_waterfall_plots(df_old: pd.DataFrame, df_new: pd.DataFrame, output_
                 y_pos = bar.get_y() + height/2
                 # Only show label if height is significant enough
                 if abs(height) > 0.01:  # Adjust threshold as needed
-                    ax2.text(
+                    plt.text(
                         bar.get_x() + bar.get_width()/2.,
                         y_pos,
                         f'{height:.1f}M',
@@ -492,18 +502,23 @@ def generate_waterfall_plots(df_old: pd.DataFrame, df_new: pd.DataFrame, output_
                         va='center',
                         **label_style
                     )
+            plt.tight_layout()
+            new_plot_path = os.path.join(waterfall_dir, f'waterfall_plot_{hierarchy}_new.png')
+            plt.savefig(new_plot_path, bbox_inches='tight', dpi=300)
+            plt.close()
+            plot_paths.append(f"outputs/waterfall_plots/{os.path.basename(new_plot_path)}")
             
             # Plot percentage differences
-            bars3 = ax3.bar(
+            plt.figure(figsize=(10, 8))
+            bars3 = plt.bar(
                 bar_positions, 
                 pct_diff, 
                 color=["red" if x < 0 else "green" for x in pct_diff],
                 alpha=0.7
             )
-            ax3.set_title(f'Percentage Differences - {hierarchy}', pad=20)
-            ax3.set_xticks(bar_positions)
-            ax3.set_xticklabels(paid_cols, rotation=45, ha='right', fontsize=8)
-            ax3.axhline(y=0, color='black', linestyle='-', linewidth=0.5)
+            plt.title(f'Percentage Differences - {hierarchy}', pad=20)
+            plt.xticks(bar_positions, paid_cols, rotation=45, ha='right', fontsize=8)
+            plt.axhline(y=0, color='black', linestyle='-', linewidth=0.5)
             
             # Add value labels for percentage differences
             for bar in bars3:
@@ -511,7 +526,7 @@ def generate_waterfall_plots(df_old: pd.DataFrame, df_new: pd.DataFrame, output_
                 # Only show label if percentage difference is significant enough
                 if abs(height) > 1.0:  # Adjust threshold as needed
                     y_offset = 5 if height >= 0 else -5
-                    ax3.text(
+                    plt.text(
                         bar.get_x() + bar.get_width()/2.,
                         height + y_offset,
                         f'{height:.1f}%',
@@ -519,16 +534,11 @@ def generate_waterfall_plots(df_old: pd.DataFrame, df_new: pd.DataFrame, output_
                         va='bottom' if height >= 0 else 'top',
                         **label_style
                     )
-            
-            # Adjust layout
             plt.tight_layout()
-            
-            # Save plot with high resolution
-            plot_path = os.path.join(waterfall_dir, f'waterfall_plot_{hierarchy}.png')
-            plt.savefig(plot_path, bbox_inches='tight', dpi=300)
+            diff_plot_path = os.path.join(waterfall_dir, f'waterfall_plot_{hierarchy}_diff.png')
+            plt.savefig(diff_plot_path, bbox_inches='tight', dpi=300)
             plt.close()
-            
-            plot_paths.append(f"outputs/waterfall_plots/{os.path.basename(plot_path)}")
+            plot_paths.append(f"outputs/waterfall_plots/{os.path.basename(diff_plot_path)}")
         
         return plot_paths
     except Exception as e:
