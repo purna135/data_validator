@@ -1,3 +1,4 @@
+import datetime
 from flask import Flask, render_template, request, redirect, url_for, send_file, session, send_from_directory, stream_with_context, Response
 import os
 from werkzeug.utils import secure_filename
@@ -67,7 +68,6 @@ def view_html():
     else:
         return "HTML report not found", 404
 
-
 @app.route("/download_pdf")
 def download_pdf():
     try:
@@ -82,8 +82,11 @@ def download_pdf():
         # Get the base name of the original file (without extension)
         original_name = os.path.splitext(uploaded_filename)[0]
         
-        # Create a new filename with the original name as a suffix
-        new_filename = f"validation_report_{original_name}.pdf"
+        # Get current date and time
+        current_time = datetime.now().strftime("%Y%m%d_%H%M")
+        
+        # Create a new filename with the original name and timestamp as a suffix
+        new_filename = f"validation_report_{original_name}_{current_time}.pdf"
 
         def generate():
             with open(pdf_report_path, 'rb') as f:
