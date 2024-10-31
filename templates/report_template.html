@@ -261,11 +261,23 @@
         <!-- Waterfall Plots Section -->
         <div class="section">
             <h2>Waterfall Plots - Contribution Comparison</h2>
-            <div class="plots-container">
+            <table class="chart-table">
+                <tr>
                 {% for plot in waterfall_plots %}
-                    <img src="{{ plot }}" class="waterfall-plot">
+                    <td>
+                        {% if not for_pdf %}
+                            <a href="{{ plot }}" data-lightbox="waterfall-plots">
+                                <img src="{{ plot }}" alt="Waterfall Plot" class="waterfall-plot">
+                            </a>
+                        {% else %}
+                            <img src="{{ plot }}" alt="Waterfall Plot" class="waterfall-plot">
+                        {% endif %}
+                        <div class="chart-name">{{ (plot | string).split('/')[-1].rsplit('.', 1)[0] | safe }}</div>
+                    </td>
+                    {% if loop.index % 3 == 0 %}</tr><tr>{% endif %}
                 {% endfor %}
-            </div>
+                </tr>
+            </table>
         </div>
     {% endif %}
 
