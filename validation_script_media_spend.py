@@ -285,9 +285,9 @@ def calculate_media_spend_by_brand(df: pd.DataFrame) -> pd.DataFrame:
             
             results.append({
                 'Brand': brand,
-                'Paid Media (%)': (paid_media_spend_total / total_spend * 100) if total_spend else 0,
-                'Promo (%)': (promo_spend_total / total_spend * 100) if total_spend else 0,
-                'Retail (%)': (retail_spend_total / total_spend * 100) if total_spend else 0,
+                'Paid Media': paid_media_spend_total,
+                'Promo': promo_spend_total,
+                'Retail': retail_spend_total,
                 'Total Spend': total_spend,
                 'Total Sales': total_sales,
             })
@@ -298,7 +298,7 @@ def calculate_media_spend_by_brand(df: pd.DataFrame) -> pd.DataFrame:
         raise
 
 def calculate_media_spend_by_year(df: pd.DataFrame) -> pd.DataFrame:
-    """Calculates percentage contribution of each media type by year"""
+    """Calculates total spend of each media type by year"""
     try:
         results = []
         col_categories = get_media_cols(df)
@@ -312,20 +312,20 @@ def calculate_media_spend_by_year(df: pd.DataFrame) -> pd.DataFrame:
             
             results.append({
                 'Year': year,
-                'Paid Media (%)': (paid_media_spend_total / total_spend * 100) if total_spend else 0,
-                'Promo (%)': (promo_spend_total / total_spend * 100) if total_spend else 0,
-                'Retail (%)': (retail_spend_total / total_spend * 100) if total_spend else 0,
+                'Paid Media': paid_media_spend_total,
+                'Promo': promo_spend_total,
+                'Retail': retail_spend_total,
                 'Total Spend': total_spend,
                 'Total Sales': total_sales,
             })
         
         return pd.DataFrame(results)
     except Exception as e:
-        logger.error(f"Error in calculate_components_by_year: {str(e)}")
+        logger.error(f"Error in calculate_media_spend_by_year: {str(e)}")
         raise
 
 def calculate_media_spend_by_brand_year(df: pd.DataFrame) -> pd.DataFrame:
-    """Calculates media spend contribution by brand and year"""
+    """Calculates media spend by brand and year"""
     try:
         df = df[df['year'] >= 2023]  # Filter for recent years
         results = []
@@ -341,9 +341,9 @@ def calculate_media_spend_by_brand_year(df: pd.DataFrame) -> pd.DataFrame:
             results.append({
                 'Brand': brand,
                 'Year': year,
-                'Paid Media (%)': (paid_media_spend_total / total_spend * 100) if total_spend else 0,
-                'Promo (%)': (promo_spend_total / total_spend * 100) if total_spend else 0,
-                'Retail (%)': (retail_spend_total / total_spend * 100) if total_spend else 0,
+                'Paid Media': paid_media_spend_total,
+                'Promo': promo_spend_total,
+                'Retail': retail_spend_total,
                 'Total Spend': total_spend,
                 'Total Sales': total_sales
             })
@@ -397,7 +397,16 @@ def generate_report(template_data: Dict[str, Any], output_folder: str) -> Tuple[
         
         pdfkit.from_string(pdf_content, pdf_report_path, options={
             'enable-local-file-access': None,
-            'quiet': ''
+            'quiet': '',
+            'page-size': 'A3',           # Changed from default A4 to A3
+            'orientation': 'Landscape',   # Changed to landscape orientation
+            'margin-top': '15mm',        # Adjusted margins
+            'margin-right': '15mm',
+            'margin-bottom': '15mm',
+            'margin-left': '15mm',
+            'encoding': 'UTF-8',
+            'no-outline': None,
+            'enable-local-file-access': None
         })
         
         logger.info(f"Reports generated successfully at {output_folder}")
@@ -498,15 +507,15 @@ def make_validation_report(
         
         # Create comparison DataFrame
         brand_components = pd.DataFrame({
-            'Paid Media (%) Old': old_brandwise['Paid Media (%)'],
-            'Paid Media (%) New': new_brandwise['Paid Media (%)'],
-            'Paid Media Diff (%)': new_brandwise['Paid Media (%)'] - old_brandwise['Paid Media (%)'],
-            'Promo (%) Old': old_brandwise['Promo (%)'],
-            'Promo (%) New': new_brandwise['Promo (%)'],
-            'Promo Diff (%)': new_brandwise['Promo (%)'] - old_brandwise['Promo (%)'],
-            'Retail (%) Old': old_brandwise['Retail (%)'],
-            'Retail (%) New': new_brandwise['Retail (%)'],
-            'Retail Diff (%)': new_brandwise['Retail (%)'] - old_brandwise['Retail (%)'],
+            'Paid Media Old': old_brandwise['Paid Media'],
+            'Paid Media New': new_brandwise['Paid Media'],
+            'Paid Media Diff': new_brandwise['Paid Media'] - old_brandwise['Paid Media'],
+            'Promo Old': old_brandwise['Promo'],
+            'Promo New': new_brandwise['Promo'],
+            'Promo Diff': new_brandwise['Promo'] - old_brandwise['Promo'],
+            'Retail Old': old_brandwise['Retail'],
+            'Retail New': new_brandwise['Retail'],
+            'Retail Diff': new_brandwise['Retail'] - old_brandwise['Retail'],
             'Total Spend Old': old_brandwise['Total Spend'],
             'Total Spend New': new_brandwise['Total Spend'],
             'Total Spend Diff': new_brandwise['Total Spend'] - old_brandwise['Total Spend'],
@@ -521,15 +530,15 @@ def make_validation_report(
         
         # Create year-wise comparison
         year_components = pd.DataFrame({
-            'Paid Media (%) Old': old_yearwise['Paid Media (%)'],
-            'Paid Media (%) New': new_yearwise['Paid Media (%)'],
-            'Paid Media Diff (%)': new_yearwise['Paid Media (%)'] - old_yearwise['Paid Media (%)'],
-            'Promo (%) Old': old_yearwise['Promo (%)'],
-            'Promo (%) New': new_yearwise['Promo (%)'],
-            'Promo Diff (%)': new_yearwise['Promo (%)'] - old_yearwise['Promo (%)'],
-            'Retail (%) Old': old_yearwise['Retail (%)'],
-            'Retail (%) New': new_yearwise['Retail (%)'],
-            'Retail Diff (%)': new_yearwise['Retail (%)'] - old_yearwise['Retail (%)'],
+            'Paid Media Old': old_yearwise['Paid Media'],
+            'Paid Media New': new_yearwise['Paid Media'],
+            'Paid Media Diff': new_yearwise['Paid Media'] - old_yearwise['Paid Media'],
+            'Promo Old': old_yearwise['Promo'],
+            'Promo New': new_yearwise['Promo'],
+            'Promo Diff': new_yearwise['Promo'] - old_yearwise['Promo'],
+            'Retail Old': old_yearwise['Retail'],
+            'Retail New': new_yearwise['Retail'],
+            'Retail Diff': new_yearwise['Retail'] - old_yearwise['Retail'],
             'Total Spend Old': old_yearwise['Total Spend'],
             'Total Spend New': new_yearwise['Total Spend'],
             'Total Spend Diff': new_yearwise['Total Spend'] - old_yearwise['Total Spend'],
@@ -544,15 +553,15 @@ def make_validation_report(
         
         # Create brand-year comparison
         brand_year_components = pd.DataFrame({
-            'Paid Media (%) Old': old_brand_year['Paid Media (%)'],
-            'Paid Media (%) New': new_brand_year['Paid Media (%)'],
-            'Paid Media Diff (%)': new_brand_year['Paid Media (%)'] - old_brand_year['Paid Media (%)'],
-            'Promo (%) Old': old_brand_year['Promo (%)'],
-            'Promo (%) New': new_brand_year['Promo (%)'],
-            'Promo Diff (%)': new_brand_year['Promo (%)'] - old_brand_year['Promo (%)'],
-            'Retail (%) Old': old_brand_year['Retail (%)'],
-            'Retail (%) New': new_brand_year['Retail (%)'],
-            'Retail Diff (%)': new_brand_year['Retail (%)'] - old_brand_year['Retail (%)'],
+            'Paid Media Old': old_brand_year['Paid Media'],
+            'Paid Media New': new_brand_year['Paid Media'],
+            'Paid Media Diff': new_brand_year['Paid Media'] - old_brand_year['Paid Media'],
+            'Promo Old': old_brand_year['Promo'],
+            'Promo New': new_brand_year['Promo'],
+            'Promo Diff': new_brand_year['Promo'] - old_brand_year['Promo'],
+            'Retail Old': old_brand_year['Retail'],
+            'Retail New': new_brand_year['Retail'],
+            'Retail Diff': new_brand_year['Retail'] - old_brand_year['Retail'],
             'Total Spend Old': old_brand_year['Total Spend'],
             'Total Spend New': new_brand_year['Total Spend'],
             'Total Spend Diff': new_brand_year['Total Spend'] - old_brand_year['Total Spend'],
