@@ -29,8 +29,13 @@ def load_and_prepare_data(
     """Loads, filters and prepares data from new and old model files"""
     try:
         logger.info("Loading data files...")
+        # Load data and fill NA values with 0 in one step
         df_new = pd.concat(pd.read_csv(new_file_path, chunksize=10000))
         df_old = pd.concat(pd.read_csv(old_file_path, chunksize=10000))
+
+        # Fill all NaN values with 0 once after loading
+        df_new.fillna(0, inplace=True)
+        df_old.fillna(0, inplace=True)
 
         # Filter by country if provided
         if country_name:
@@ -61,7 +66,6 @@ def load_and_prepare_data(
 
         if end_date:
             common_dates = common_dates[common_dates <= end_date]
-        
         
         # Filter to common dates
         df_new = df_new[df_new['date'].isin(common_dates)]
