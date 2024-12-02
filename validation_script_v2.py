@@ -219,12 +219,12 @@ def generate_comparison_charts(
     df_combined: pd.DataFrame,
     columns_to_compare: List[str],
     output_folder: str
-) -> List[str]:
+) -> Dict[str, List[str]]:
     """Generates comparison charts for columns with significant differences"""
     try:
         chart_dir = os.path.join(output_folder, "charts")
         os.makedirs(chart_dir, exist_ok=True)
-        chart_paths = []
+        chart_paths = {}
         
         # Calculate max diff for each brand-column combination
         diff_data = []
@@ -244,9 +244,6 @@ def generate_comparison_charts(
             del brand_data
             gc.collect()
             
-        # Sort by diff descending and generate charts
-        diff_data.sort(key=lambda x: x['diff'], reverse=True)
-        
         for item in diff_data:
             chart_path = plot_comparison_chart(
                 item['data'], 
@@ -255,7 +252,11 @@ def generate_comparison_charts(
                 item['diff'],
                 chart_dir
             )
-            chart_paths.append(f"outputs/charts/{os.path.basename(chart_path)}")
+            relative_path = f"outputs/charts/{os.path.basename(chart_path)}"
+            
+            if item['column'] not in chart_paths:
+                chart_paths[item['column']] = []
+            chart_paths[item['column']].append(relative_path)
             
             del item['data']
             gc.collect()
@@ -380,10 +381,10 @@ def generate_report(template_data: Dict[str, Any], output_folder: str) -> Tuple[
             f.write(html_content)
         
         # Update the chart paths for PDF
-        template_data['brand_wise_charts'] = [
-            os.path.join(os.getcwd(), path) 
-            for path in template_data['brand_wise_charts']
-        ]
+        template_data['brand_wise_charts'] = {
+            driver: [os.path.join(os.getcwd(), path) for path in charts]
+            for driver, charts in template_data['brand_wise_charts'].items()
+        }
         template_data['waterfall_plots'] = [
             os.path.join(os.getcwd(), path)
             for path in template_data['waterfall_plots']

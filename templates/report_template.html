@@ -353,23 +353,26 @@
         {% if not for_pdf %}
             <p><b>NOTE: </b>Click on image to increase its size</p>
         {% endif %}
-        <table class="chart-table">
-            <tr>
-            {% for chart in brand_wise_charts %}
-                <td>
-                    {% if not for_pdf %}
-                        <a href="{{ chart }}" data-lightbox="charts">
+        {% for driver, charts in brand_wise_charts.items() %}
+            <h3>{{ driver }}</h3>
+            <table class="chart-table">
+                <tr>
+                {% for chart in charts %}
+                    <td>
+                        {% if not for_pdf %}
+                            <a href="{{ chart }}" data-lightbox="charts">
+                                <img src="{{ chart }}" alt="Chart">
+                            </a>
+                        {% else %}
                             <img src="{{ chart }}" alt="Chart">
-                        </a>
-                    {% else %}
-                        <img src="{{ chart }}" alt="Chart">
-                    {% endif %}
-                    <div class="chart-name">{{ (chart | string).split('/')[-1].rsplit('.', 1)[0] | safe }}</div>
-                </td>
-                {% if loop.index % 3 == 0 %}</tr><tr>{% endif %}
-            {% endfor %}
-            </tr>
-        </table>
+                        {% endif %}
+                        <div class="chart-name">{{ (chart | string).split('/')[-1].rsplit('.', 1)[0] | safe }}</div>
+                    </td>
+                    {% if loop.index % 3 == 0 %}</tr><tr>{% endif %}
+                {% endfor %}
+                </tr>
+            </table>
+        {% endfor %}
     </div>
             
     <!-- Initialize DataTables only if not generating PDF -->
